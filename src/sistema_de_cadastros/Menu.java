@@ -134,6 +134,52 @@ public class Menu {
             throw new RuntimeException("As perguntas de 1 a 4 são fixas no formulário e nao podem ser deletadas");
         }
         else{
+            String[] tempPerguntas = new String[quantidadeDePerguntas - 1];
+            String linha = "";
+            int perguntaLida = 1;
+            int posicao = 1;
+            boolean correcao = false;
+            try(BufferedReader bufferedReader = new BufferedReader(new FileReader("formulario.txt"));){
+            linha = bufferedReader.readLine();
+                while(linha != null){
+                    if(perguntaLida == perguntaDeletada){
+                        perguntaLida++;
+                        correcao = true;
+                    }
+                    if(perguntaLida != perguntaDeletada){
+                        if(correcao){
+                            perguntaLida--;
+                        }
+                        tempPerguntas[perguntaLida - 1] = linha;
+                        perguntaLida++;
+                    }
+                    linha = bufferedReader.readLine();
+                }
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+            //passar essas linhas para um outro arquivo
+            File novoFormularioTemp = new File("temp" + "formulario.txt");
+            File formulario = new File("formulario.txt");
+            try{
+                novoFormularioTemp.createNewFile();
+                FileWriter fileWriter = new FileWriter(novoFormularioTemp, true);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                for(int i = 0; i < quantidadeDePerguntas - 1; i++){
+                    bufferedWriter.write(tempPerguntas[i]);
+                    if(i != quantidadeDePerguntas - 2){
+                        bufferedWriter.newLine();
+                    }
+                }
+                fileWriter.flush();
+                bufferedWriter.flush();
+                fileWriter.close();
+                bufferedWriter.close();
+                formulario.delete();
+                novoFormularioTemp.renameTo(formulario);
+            }catch(IOException e){
+                e.printStackTrace();
+            }
 
         }
     }
