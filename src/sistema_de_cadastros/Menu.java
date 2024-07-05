@@ -1,6 +1,7 @@
 package sistema_de_cadastros;
 
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class Menu {
@@ -25,44 +26,62 @@ public class Menu {
         //Executar ação baseada na opção escolhida
         switch (option){
             case 1:
-                //chama a função que cadastra usuarios
                 cadastrarUsuario();
                 break;
             case 2:
                 //chama a função que lista todos os usuarios cadastrados
                 break;
             case 3:
-                //chama a função que cadastra uma nova pergunta no formulario
                 adicionarPergunta();
                 break;
             case 4:
                 //chama a função que deleta uma pergunta do formulario
+                apagarPergunta();
                 break;
             case 5:
                 //chama a função que pesquisa usuario por nome idade ou email
                 break;
         }
     }
-    private void cadastrarUsuario() {
-        String path = "C:\\Users\\Mat\\Desktop\\MeusProjetos\\projetos-java\\sistema_de_cadastros_remake\\formulario.txt";
-        File file = new File(path);
-        try(FileReader fileReader = new FileReader(file);
-            BufferedReader bufferedReader = new BufferedReader(fileReader)){
-            String linha = "";
-            while(linha !=  null){
-                System.out.println(linha);
+    private void cadastrarUsuario(){
+        Scanner scanner = new Scanner(System.in);
+        String nome  = "";
+        String linha = "";
+        int numeroPergunta = 1;
+        try(FileReader fileReader = new FileReader("formulario.txt");
+        BufferedReader bufferedReader = new BufferedReader(fileReader)){
+            linha = bufferedReader.readLine();
+            System.out.println("Cadastrando usuário...");
+            System.out.println(linha + ": ");
+            nome = scanner.nextLine();
+            File file = new File("C:\\Users\\Mat\\Desktop\\git\\sistema_de_cadastros_remake\\src\\cadastros\\" + nome.toLowerCase().trim().replace(" ", "_") + ".txt");
+            file.createNewFile();
+            FileWriter fileWriter = new FileWriter(file, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(numeroPergunta + " - " + nome);
+            bufferedWriter.newLine();
+            numeroPergunta++;
+            while(linha != null){
                 linha = bufferedReader.readLine();
+                if (linha != null) {
+                    System.out.println(linha + ": ");
+                    bufferedWriter.write(numeroPergunta + " - " + scanner.nextLine());
+                    bufferedWriter.newLine();
+                    numeroPergunta++;
+                }
             }
-        }catch(IOException e){
+            fileWriter.flush();
+            bufferedWriter.flush();
+            fileWriter.close();
+            bufferedWriter.close();
+            }catch(IOException e){
             e.printStackTrace();
         }
-
     }
 
     private void printarPerguntas(){
-        String path = "C:\\Users\\Mat\\Desktop\\MeusProjetos\\projetos-java\\sistema_de_cadastros_remake\\formulario.txt";
         //mostrar perguntas na tela
-        File file = new File(path);
+        File file = new File("formulario.txt");
         try(FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader)){
             String linha = "";
@@ -99,6 +118,24 @@ public class Menu {
             e.printStackTrace();
         }
         return quantidadeDePerguntas;
+    }
+
+    private void apagarPergunta(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("#################################################################");
+        System.out.println("Digite o número da pergunta para apaga-la do formulário");
+        printarPerguntas();
+        System.out.println("Apagar pergunta de número: ");
+        int perguntaDeletada = scanner.nextInt();
+        if(perguntaDeletada <= 0 || perguntaDeletada > quantidadeDePerguntas){
+            throw new RuntimeException("Valor inválido");
+        }
+        if(perguntaDeletada >= 1 && perguntaDeletada <= 4){
+            throw new RuntimeException("As perguntas de 1 a 4 são fixas no formulário e nao podem ser deletadas");
+        }
+        else{
+
+        }
     }
 }
 
